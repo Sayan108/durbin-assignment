@@ -1,25 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+import "./App.css";
+import CompanyList from "./components/companyList";
+import GraphWithCheckbox from "./components/graphComponent";
+import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import MyMapComponent from "./components/mapLocation";
 
 function App() {
+  const navigate = useNavigate();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <AppBar position="sticky">
+        <Toolbar>
+          <Typography variant="h6" style={{ flexGrow: 1 }}>
+            Dashboard
+          </Typography>
+          <Button
+            color="inherit"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Company List
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() => {
+              navigate("/graph");
+            }}
+          >
+            Graph
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() => {
+              navigate("/locateYourSelf");
+            }}
+          >
+            Real Time Map
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <Routes>
+        <Route path="/" element={<CompanyList />} />
+        <Route path="/graph" element={<GraphWithCheckbox />} />
+        <Route path="/locateYourSelf" element={<MyMapComponent />} />
+      </Routes>
+    </>
   );
 }
 
