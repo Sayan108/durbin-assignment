@@ -142,27 +142,27 @@ const CompanyList = () => {
     setSearchTerm(formatDate(value));
   };
 
-  const filteredRows =
-    searchTerm.length > 2
-      ? dashBoardData.filter((row) => {
-          const matchesSearch =
-            findObjectWithMatchingValue(row, searchTerm) !== null;
+  // const filteredRows =
+  //   searchTerm.length > 2
+  //     ? dashBoardData.filter((row) => {
+  //         const matchesSearch =
+  //           findObjectWithMatchingValue(row, searchTerm) !== null;
 
-          const matchesStatus =
-            statusFilter === "" || row.status === statusFilter;
-          const matchesPerformance =
-            performanceFilter === "" ||
-            (performanceFilter === "0-30" && row.performance <= 30) ||
-            (performanceFilter === "31-60" &&
-              row.performance > 30 &&
-              row.performance <= 60) ||
-            (performanceFilter === "61-100" &&
-              row.performance > 60 &&
-              row.performance <= 100);
+  //         const matchesStatus =
+  //           statusFilter === "" || row.status === statusFilter;
+  //         const matchesPerformance =
+  //           performanceFilter === "" ||
+  //           (performanceFilter === "0-30" && row.performance <= 30) ||
+  //           (performanceFilter === "31-60" &&
+  //             row.performance > 30 &&
+  //             row.performance <= 60) ||
+  //           (performanceFilter === "61-100" &&
+  //             row.performance > 60 &&
+  //             row.performance <= 100);
 
-          return matchesSearch && matchesStatus && matchesPerformance;
-        })
-      : dashBoardData;
+  //         return matchesSearch && matchesStatus && matchesPerformance;
+  //       })
+  //     : dashBoardData;
   useEffect(() => {
     fetchAllDashBoardData();
     console.log(dashBoardData, "getting data");
@@ -170,28 +170,29 @@ const CompanyList = () => {
 
   useEffect(() => {
     setFilteredData(
-      searchTerm.length > 2
-        ? dashBoardData.filter((row) => {
-            const matchesSearch =
-              findObjectWithMatchingValue(row, searchTerm) !== null;
+      dashBoardData.filter((row) => {
+        console.log(row);
+        const matchesSearch =
+          searchTerm.length > 2
+            ? findObjectWithMatchingValue(row, searchTerm) !== null
+            : true;
 
-            const matchesStatus =
-              statusFilter === "" || row.status === statusFilter;
-            const matchesPerformance =
-              performanceFilter === "" ||
-              (performanceFilter === "0-30" && row.performance <= 30) ||
-              (performanceFilter === "31-60" &&
-                row.performance > 30 &&
-                row.performance <= 60) ||
-              (performanceFilter === "61-100" &&
-                row.performance > 60 &&
-                row.performance <= 100);
-
-            return matchesSearch && matchesStatus && matchesPerformance;
-          })
-        : dashBoardData
+        const matchesStatus =
+          statusFilter === "" || row.status === statusFilter;
+        const matchesPerformance =
+          performanceFilter === "" ||
+          (performanceFilter === "0-30" && row.performance <= 30) ||
+          (performanceFilter === "31-60" &&
+            row.performance > 30 &&
+            row.performance <= 60) ||
+          (performanceFilter === "61-100" &&
+            row.performance > 60 &&
+            row.performance <= 100);
+        console.log(row, matchesSearch, matchesStatus, matchesPerformance);
+        return matchesSearch && matchesStatus && matchesPerformance;
+      })
     );
-  }, [searchTerm]);
+  }, [searchTerm, performanceFilter, statusFilter, dashBoardData]);
 
   return (
     <Box
@@ -349,9 +350,9 @@ const CompanyList = () => {
       <Divider sx={{ marginY: 2 }} />
       <DataGrid
         disableColumnMenu
-        rows={searchTerm.length > 2 ? filteredData : dashBoardData}
+        rows={filteredData}
         columns={columns}
-        // pagination
+        pagination
         getRowId={(row) => row.companyName + Math.random()}
         sx={{
           boxShadow: 2,
