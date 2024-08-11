@@ -349,7 +349,7 @@ const CompanyList = () => {
       <Divider sx={{ marginY: 2 }} />
       <DataGrid
         disableColumnMenu
-        rows={filteredData}
+        rows={searchTerm.length > 2 ? filteredData : dashBoardData}
         columns={columns}
         // pagination
         getRowId={(row) => row.companyName + Math.random()}
