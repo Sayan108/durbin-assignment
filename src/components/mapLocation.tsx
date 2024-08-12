@@ -36,38 +36,67 @@ const MyLocationMarker = (props: any) => {
 
 const MyMapComponent = () => {
   const [position, setPosition] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const handleSuccess = (pos: GeolocationPosition) => {
+      const { latitude, longitude } = pos.coords;
+      setPosition([latitude, longitude]);
+      console.log(position);
+      setError(null);
+    };
+
+    const handleError = (err: GeolocationPositionError) => {
+      console.error(err);
+      switch (err.code) {
+        case err.PERMISSION_DENIED:
+          setError("User denied the request for Geolocation.");
+          break;
+        case err.POSITION_UNAVAILABLE:
+          setError("Location information is unavailable.");
+          break;
+        case err.TIMEOUT:
+          setError("The request to get user location timed out.");
+          break;
+        default:
+          setError("An unknown error occurred.");
+          break;
+      }
+    };
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude, longitude } = pos.coords;
-          setPosition([latitude, longitude]);
-        },
-        (err) => {
-          console.error(err);
-        },
+      const watcher = navigator.geolocation.watchPosition(
+        handleSuccess,
+        handleError,
         {
           enableHighAccuracy: true,
           timeout: 5000,
           maximumAge: 0,
         }
       );
+
+      // Cleanup function to remove the watcher
+      return () => navigator.geolocation.clearWatch(watcher);
+    } else {
+      setError("Geolocation is not supported by this browser.");
     }
-  }, [navigator.geolocation]);
+  }, [position]);
 
   return (
-    <MapContainer
-      center={[51.505, -0.09]}
-      zoom={13}
-      style={{ height: "100vh", width: "100%" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      <MyLocationMarker position={position} />
-    </MapContainer>
+    <div style={{ height: "100vh", width: "100%" }}>
+      {error && <div style={{ color: "red", padding: "10px" }}>{error}</div>}
+      <MapContainer
+        center={[51.505, -0.09]}
+        zoom={13}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        <MyLocationMarker position={position} />
+      </MapContainer>
+    </div>
   );
 };
 
